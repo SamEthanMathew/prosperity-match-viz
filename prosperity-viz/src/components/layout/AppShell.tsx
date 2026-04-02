@@ -10,10 +10,12 @@ import { BookmarkList } from '../shared/BookmarkList';
 import { DecisionModeTab } from '../tabs/DecisionModeTab';
 import { InventoryRiskTab } from '../tabs/InventoryRiskTab';
 import { BookPressureTab } from '../tabs/BookPressureTab';
+import { SimpleView } from '../simple/SimpleView';
 
 export function AppShell() {
   const meta = useReplayStore((s) => s.meta);
   const activeTab = useReplayStore((s) => s.activeTab);
+  const simpleMode = useReplayStore((s) => s.simpleMode);
 
   if (!meta) {
     return <UploadDropzone />;
@@ -24,12 +26,14 @@ export function AppShell() {
       {/* Toolbar */}
       <GlobalToolbar />
 
-      {/* Tab bar */}
-      <TabBar />
+      {/* Tab bar — hidden in simple mode */}
+      {!simpleMode && <TabBar />}
 
       {/* Main content */}
       <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
-        {activeTab === 'main' && (
+        {simpleMode && <SimpleView />}
+
+        {!simpleMode && activeTab === 'main' && (
           <div style={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
             {/* Main 4-panel grid */}
             <div
@@ -89,19 +93,19 @@ export function AppShell() {
           </div>
         )}
 
-        {activeTab === 'decision_mode' && (
+        {!simpleMode && activeTab === 'decision_mode' && (
           <div style={{ height: '100%', overflow: 'hidden' }}>
             <DecisionModeTab />
           </div>
         )}
 
-        {activeTab === 'inventory_risk' && (
+        {!simpleMode && activeTab === 'inventory_risk' && (
           <div style={{ height: '100%', overflow: 'hidden' }}>
             <InventoryRiskTab />
           </div>
         )}
 
-        {activeTab === 'book_pressure' && (
+        {!simpleMode && activeTab === 'book_pressure' && (
           <div style={{ height: '100%', overflow: 'hidden' }}>
             <BookPressureTab />
           </div>

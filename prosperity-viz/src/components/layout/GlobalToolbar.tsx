@@ -23,6 +23,9 @@ export function GlobalToolbar() {
   const reset = useReplayStore((s) => s.reset);
   const trades = useReplayStore((s) => s.trades);
   const productPnl = useReplayStore((s) => s.productPnl);
+  const simpleMode = useReplayStore((s) => s.simpleMode);
+  const setSimpleMode = useReplayStore((s) => s.setSimpleMode);
+  const openHelp = useReplayStore((s) => s.openHelp);
 
   const [jumpInput, setJumpInput] = useState('');
   const equityPt = useEquityAtTimestamp(activeTimestamp);
@@ -60,6 +63,29 @@ export function GlobalToolbar() {
       flexShrink: 0,
       flexWrap: 'wrap',
     }}>
+      {/* Simple / Expert toggle */}
+      <button
+        onClick={() => setSimpleMode(!simpleMode)}
+        style={{
+          padding: '3px 10px',
+          fontSize: 11,
+          borderRadius: 4,
+          border: `1px solid ${simpleMode ? '#a6e3a1' : '#89b4fa'}`,
+          background: simpleMode ? '#a6e3a122' : '#89b4fa22',
+          color: simpleMode ? '#a6e3a1' : '#89b4fa',
+          cursor: 'pointer',
+          fontWeight: 'bold',
+          whiteSpace: 'nowrap',
+        }}
+        title={simpleMode ? 'Switch to Expert View (full charts)' : 'Switch to Simple View (plain English)'}
+      >
+        {simpleMode ? '📊 Expert View' : '🎓 Simple View'}
+      </button>
+
+      <button type="button" style={btnStyle} onClick={openHelp} title="Open user guide">
+        How to use
+      </button>
+
       {/* Match info */}
       <span style={{ color: '#89b4fa', fontSize: 11, fontWeight: 'bold', marginRight: 4 }}>
         R{meta.round} · {meta.status}
@@ -91,49 +117,51 @@ export function GlobalToolbar() {
         fills: {tradesAtTs}/{totalFills}
       </span>
 
-      {/* Navigation */}
-      <div style={{ display: 'flex', gap: 2 }}>
-        <button style={btnStyle} onClick={() => navigateFill('prev')} title="Previous fill (←)">
-          ← fill
-        </button>
-        <button style={btnStyle} onClick={() => navigateFill('next')} title="Next fill (→)">
-          fill →
-        </button>
-        <button style={btnStyle} onClick={() => navigateModeSwitch('prev')} title="Previous mode switch (Shift+←)">
-          ← mode
-        </button>
-        <button style={btnStyle} onClick={() => navigateModeSwitch('next')} title="Next mode switch (Shift+→)">
-          mode →
-        </button>
-      </div>
+      {/* Navigation (expert mode only) */}
+      {!simpleMode && (
+        <>
+          <div style={{ display: 'flex', gap: 2 }}>
+            <button style={btnStyle} onClick={() => navigateFill('prev')} title="Previous fill (←)">
+              ← fill
+            </button>
+            <button style={btnStyle} onClick={() => navigateFill('next')} title="Next fill (→)">
+              fill →
+            </button>
+            <button style={btnStyle} onClick={() => navigateModeSwitch('prev')} title="Previous mode switch (Shift+←)">
+              ← mode
+            </button>
+            <button style={btnStyle} onClick={() => navigateModeSwitch('next')} title="Next mode switch (Shift+→)">
+              mode →
+            </button>
+          </div>
 
-      {/* Timestamp display */}
-      <span style={{ color: '#f9e2af', fontSize: 11, fontFamily: 'monospace' }}>
-        ts={activeTimestamp} ({(activeTimestamp / 1000).toFixed(1)}s)
-      </span>
+          <span style={{ color: '#f9e2af', fontSize: 11, fontFamily: 'monospace' }}>
+            ts={activeTimestamp} ({(activeTimestamp / 1000).toFixed(1)}s)
+          </span>
 
-      {/* Jump input */}
-      <div style={{ display: 'flex', gap: 2 }}>
-        <input
-          type="number"
-          value={jumpInput}
-          onChange={(e) => setJumpInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleJump()}
-          placeholder="jump to ts"
-          style={{
-            width: 80,
-            padding: '2px 6px',
-            fontSize: 11,
-            background: '#313244',
-            border: '1px solid #45475a',
-            borderRadius: 3,
-            color: '#cdd6f4',
-          }}
-        />
-        <button style={btnStyle} onClick={handleJump}>
-          Jump
-        </button>
-      </div>
+          <div style={{ display: 'flex', gap: 2 }}>
+            <input
+              type="number"
+              value={jumpInput}
+              onChange={(e) => setJumpInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleJump()}
+              placeholder="jump to ts"
+              style={{
+                width: 80,
+                padding: '2px 6px',
+                fontSize: 11,
+                background: '#313244',
+                border: '1px solid #45475a',
+                borderRadius: 3,
+                color: '#cdd6f4',
+              }}
+            />
+            <button style={btnStyle} onClick={handleJump}>
+              Jump
+            </button>
+          </div>
+        </>
+      )}
 
       {/* Reset */}
       <button

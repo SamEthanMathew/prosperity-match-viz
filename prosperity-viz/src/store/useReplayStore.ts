@@ -35,8 +35,10 @@ interface ReplayState {
   viewportRange: ViewportRange | null;
   activeTab: TabId;
   tradeFilter: TradeFilter;
+  simpleMode: boolean;
   isLoading: boolean;
   loadError: string | null;
+  helpOpen: boolean;
 
   // ── Actions ──────────────────────────────────────────────────────────────
   loadData: (data: ParsedData) => void;
@@ -45,11 +47,14 @@ interface ReplayState {
   setActiveProduct: (product: string) => void;
   setViewportRange: (range: ViewportRange | null) => void;
   setActiveTab: (tab: TabId) => void;
+  setSimpleMode: (v: boolean) => void;
   setTradeFilter: (filter: Partial<TradeFilter>) => void;
   navigateFill: (direction: 'next' | 'prev') => void;
   navigateModeSwitch: (direction: 'next' | 'prev') => void;
   addManualBookmark: (ts: number, label: string) => void;
   removeBookmark: (id: string) => void;
+  openHelp: () => void;
+  closeHelp: () => void;
   reset: () => void;
 }
 
@@ -77,16 +82,20 @@ const initialState = {
   viewportRange: null as ViewportRange | null,
   activeTab: 'main' as TabId,
   tradeFilter: DEFAULT_FILTER,
+  simpleMode: false,
   isLoading: false,
   loadError: null as string | null,
+  helpOpen: false,
 };
 
 export const useReplayStore = create<ReplayState>()((set, get) => ({
   ...initialState,
 
   loadData: (data: ParsedData) => {
+    const { simpleMode } = get();
     set({
       ...initialState,
+      simpleMode,
       meta: data.meta,
       bookRows: data.bookRows,
       equityPoints: data.equityPoints,
@@ -121,6 +130,10 @@ export const useReplayStore = create<ReplayState>()((set, get) => ({
 
   setActiveTab: (tab: TabId) => {
     set({ activeTab: tab });
+  },
+
+  setSimpleMode: (v: boolean) => {
+    set({ simpleMode: v });
   },
 
   setTradeFilter: (filter: Partial<TradeFilter>) => {
@@ -162,6 +175,14 @@ export const useReplayStore = create<ReplayState>()((set, get) => ({
     set((state) => ({
       bookmarks: state.bookmarks.filter((b) => b.id !== id),
     }));
+  },
+
+  openHelp: () => {
+    set({ helpOpen: true });
+  },
+
+  closeHelp: () => {
+    set({ helpOpen: false });
   },
 
   reset: () => {
