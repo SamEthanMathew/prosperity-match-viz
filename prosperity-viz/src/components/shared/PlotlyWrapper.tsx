@@ -25,6 +25,7 @@ const DEFAULT_CONFIG = {
   modeBarButtonsToRemove: ['lasso2d', 'select2d', 'toImage'],
   responsive: true,
   displaylogo: false,
+  scrollZoom: true,
 };
 
 export function PlotlyWrapper({

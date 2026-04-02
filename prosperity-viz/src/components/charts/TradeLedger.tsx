@@ -76,11 +76,6 @@ export function TradeLedger() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-      {/* Title */}
-      <div style={{ padding: '4px 8px', borderBottom: '1px solid #313244', color: '#89b4fa', fontSize: 11, fontWeight: 'bold', flexShrink: 0 }}>
-        📋 Trade Ledger — {filtered.length}/{tradeOutcomes.length} trades
-      </div>
-
       {/* Filters */}
       <div style={{ padding: '4px 8px', borderBottom: '1px solid #313244', display: 'flex', flexWrap: 'wrap', gap: 4, flexShrink: 0 }}>
         {/* Product filter */}

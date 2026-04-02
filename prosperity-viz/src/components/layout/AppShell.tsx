@@ -12,6 +12,7 @@ import { InventoryRiskTab } from '../tabs/InventoryRiskTab';
 import { BookPressureTab } from '../tabs/BookPressureTab';
 import { SimpleView } from '../simple/SimpleView';
 import { StarRepoCallout } from './StarRepoCallout';
+import { ExpandablePanel } from '../shared/ExpandablePanel';
 
 export function AppShell() {
   const meta = useReplayStore((s) => s.meta);
@@ -51,32 +52,30 @@ export function AppShell() {
             >
               {/* Top-left: Equity chart */}
               <div style={{ background: '#1e1e2e', overflow: 'hidden', minWidth: 0, minHeight: 0 }}>
-                <div style={{ padding: '4px 8px', borderBottom: '1px solid #313244', color: '#89b4fa', fontSize: 11, fontWeight: 'bold' }}>
-                  📈 Equity & PnL Timeline
-                </div>
-                <div style={{ height: 'calc(100% - 26px)', overflow: 'hidden' }}>
+                <ExpandablePanel id="equity" title="📈 Equity & PnL Timeline">
                   <EquityChart />
-                </div>
+                </ExpandablePanel>
               </div>
 
               {/* Top-right: Price replay */}
               <div style={{ background: '#1e1e2e', overflow: 'hidden', minWidth: 0, minHeight: 0 }}>
-                <div style={{ padding: '4px 8px', borderBottom: '1px solid #313244', color: '#89b4fa', fontSize: 11, fontWeight: 'bold' }}>
-                  💹 Product Replay
-                </div>
-                <div style={{ height: 'calc(100% - 26px)', overflow: 'hidden' }}>
+                <ExpandablePanel id="price_replay" title="💹 Product Replay">
                   <PriceReplayChart />
-                </div>
+                </ExpandablePanel>
               </div>
 
               {/* Bottom-left: Microscope */}
               <div style={{ background: '#1e1e2e', overflow: 'hidden', minWidth: 0, minHeight: 0 }}>
-                <MicroscopePanel />
+                <ExpandablePanel id="microscope" title="🔬 Timestamp Microscope">
+                  <MicroscopePanel />
+                </ExpandablePanel>
               </div>
 
               {/* Bottom-right: Trade ledger */}
               <div style={{ background: '#1e1e2e', overflow: 'hidden', minWidth: 0, minHeight: 0 }}>
-                <TradeLedger />
+                <ExpandablePanel id="trade_ledger" title="📋 Trade Ledger">
+                  <TradeLedger />
+                </ExpandablePanel>
               </div>
             </div>
 
