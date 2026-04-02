@@ -3,6 +3,7 @@ import { useReplayStore } from '../../store/useReplayStore';
 import { parseZipFile } from '../../parsing/parseZip';
 import { isSupabaseConfigured } from '../../lib/supabaseClient';
 import { uploadMatchToSupabase } from '../../lib/uploadMatchToSupabase';
+import { GITHUB_REPO_URL } from '../../lib/repoMeta';
 
 const btnStyle: React.CSSProperties = {
   padding: '2px 8px',
@@ -275,6 +276,24 @@ export function UploadDropzone() {
         <br />
         <span style={{ color: '#5c5f77' }}>Full details in How to use.</span>
       </div>
+
+      <a
+        href={GITHUB_REPO_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          ...btnStyle,
+          display: 'inline-block',
+          marginTop: 4,
+          padding: '6px 14px',
+          fontSize: 12,
+          borderColor: '#45475a',
+          color: '#89b4fa',
+          textDecoration: 'none',
+        }}
+      >
+        Check the Repo Out
+      </a>
     </div>
   );
 }
