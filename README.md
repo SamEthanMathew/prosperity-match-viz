@@ -2,7 +2,7 @@
 
 Browser-based replay and analysis for **Prosperity IV** match exports. Load a match `.zip`, explore equity curves, product replay, trades, and optional advanced tabs — all processed in your browser.
 
-**Repository:** [github.com/SamEthanMathew/prosperity-match-viz](https://github.com/SamEthanMathew/prosperity-match-viz)
+**Website:** [prosperity-match-viz.vercel.app](prosperity-match-viz.vercel.app)
 
 If you find this project useful, **[star the repo on GitHub](https://github.com/SamEthanMathew/prosperity-match-viz)** — it helps visibility and signals that the tool is worth maintaining.
 
