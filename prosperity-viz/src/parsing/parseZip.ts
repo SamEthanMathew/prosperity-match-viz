@@ -92,7 +92,7 @@ export async function parseZipFile(file: File): Promise<ParsedData> {
   const modeSwitches = detectModeSwitches(botStates);
   const tradeOutcomes = computeTradeOutcomes(trades, bookRows);
   const bookmarks = generateBookmarks(equityPoints, masterFrames, trades, modeSwitches);
-  const productPnl = computeProductPnl(trades, equityPoints);
+  const productPnl = computeProductPnl(bookRows);
 
   const meta: MatchMeta = {
     round: jsonData.round,

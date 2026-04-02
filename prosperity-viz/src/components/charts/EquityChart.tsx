@@ -185,7 +185,7 @@ export function EquityChart() {
         type: 'linear',
       },
       yaxis: {
-        title: 'PnL (SeaShells)',
+        title: 'PnL (cash)',
         color: TEXT_COLOR,
         gridcolor: GRID_COLOR,
         zeroline: true,

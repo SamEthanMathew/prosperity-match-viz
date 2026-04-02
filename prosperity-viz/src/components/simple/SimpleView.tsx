@@ -79,7 +79,7 @@ function ScoreCards() {
         <div style={{ fontSize: 28, fontWeight: 'bold', color: meta.profit >= 0 ? '#a6e3a1' : '#f38ba8', fontFamily: 'monospace' }}>
           {meta.profit >= 0 ? '+' : ''}{meta.profit.toFixed(2)}
         </div>
-        <div style={{ fontSize: 10, color: '#6c7086', marginTop: 4 }}>SeaShells</div>
+        <div style={{ fontSize: 10, color: '#6c7086', marginTop: 4 }}>cash</div>
       </div>
 
       {/* Trades */}
@@ -265,7 +265,7 @@ function FairValueChart({ product }: { product: string }) {
 
     const layout = {
       xaxis: { title: 'Time (milliseconds)', color: TEXT_COLOR, gridcolor: GRID_COLOR },
-      yaxis: { title: 'Price (SeaShells)', color: TEXT_COLOR, gridcolor: GRID_COLOR },
+      yaxis: { title: 'Price (cash)', color: TEXT_COLOR, gridcolor: GRID_COLOR },
       hovermode: 'closest',
       legend: { orientation: 'h', y: -0.2, font: { color: TEXT_COLOR, size: 10 } },
       margin: { t: 10, r: 10, b: 50, l: 65 },
@@ -459,16 +459,16 @@ function buildEventCards(
 
       const edgeDesc = edge !== null
         ? edge > 0
-          ? `${Math.abs(edge).toFixed(1)} SeaShells ${trade.isBuy ? 'BELOW' : 'ABOVE'} fair value ✅`
-          : `${Math.abs(edge).toFixed(1)} SeaShells ${trade.isBuy ? 'ABOVE' : 'BELOW'} fair value ❌`
+          ? `${Math.abs(edge).toFixed(1)} cash ${trade.isBuy ? 'BELOW' : 'ABOVE'} fair value ✅`
+          : `${Math.abs(edge).toFixed(1)} cash ${trade.isBuy ? 'ABOVE' : 'BELOW'} fair value ❌`
         : 'unknown edge (no fair value data)';
 
       let outcomeText = '';
       if (outcome?.fwd500 !== null && outcome?.fwd500 !== undefined) {
         const pnl500 = outcome.fwd500 * trade.quantity;
         outcomeText = pnl500 >= 0
-          ? `500ms later: price moved in our favor → +${pnl500.toFixed(1)} SeaShells ✅`
-          : `500ms later: price moved against us → ${pnl500.toFixed(1)} SeaShells ❌`;
+          ? `500ms later: price moved in our favor → +${pnl500.toFixed(1)} cash ✅`
+          : `500ms later: price moved against us → ${pnl500.toFixed(1)} cash ❌`;
       }
 
       cards.push({
@@ -626,7 +626,7 @@ function KeyTakeaways() {
     // Profit
     lines.push({
       emoji: meta.profit >= 0 ? '💰' : '💸',
-      text: `Your bot traded for ${equityPoints.length > 0 ? (equityPoints[equityPoints.length - 1].timestamp / 1000).toFixed(0) : '?'}s and ${meta.profit >= 0 ? 'made' : 'lost'} ${Math.abs(meta.profit).toFixed(2)} SeaShells ${meta.profit >= 0 ? 'in profit' : 'overall'}.`,
+      text: `Your bot traded for ${equityPoints.length > 0 ? (equityPoints[equityPoints.length - 1].timestamp / 1000).toFixed(0) : '?'}s and ${meta.profit >= 0 ? 'made' : 'lost'} ${Math.abs(meta.profit).toFixed(2)} cash ${meta.profit >= 0 ? 'in profit' : 'overall'}.`,
       type: meta.profit >= 0 ? 'good' : 'warn',
     });
 
@@ -647,7 +647,7 @@ function KeyTakeaways() {
 
       lines.push({
         emoji: finalPnl >= 0 ? '✅' : '❌',
-        text: `${product}: Made ${finalPnl >= 0 ? '+' : ''}${finalPnl.toFixed(0)} SeaShells. Mostly used "${dominantMode?.[0] ?? 'passive'}" strategy (${MODE_PLAIN[dominantMode?.[0] ?? 'passive']?.split(' — ')[0]?.toLowerCase() ?? 'passive'}).`,
+        text: `${product}: Made ${finalPnl >= 0 ? '+' : ''}${finalPnl.toFixed(0)} cash. Mostly used "${dominantMode?.[0] ?? 'passive'}" strategy (${MODE_PLAIN[dominantMode?.[0] ?? 'passive']?.split(' — ')[0]?.toLowerCase() ?? 'passive'}).`,
         type: finalPnl >= 0 ? 'good' : 'warn',
       });
     }

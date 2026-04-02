@@ -289,35 +289,24 @@ export function generateBookmarks(
 
 // ── Realized PnL per product over time ───────────────────────────────────────
 
-/** Compute cumulative realized PnL per product at each timestamp in equityPoints */
+/**
+ * Read per-product PnL directly from the activitiesLog's profit_and_loss column.
+ * This is the official value from Prosperity's matching engine — far more accurate
+ * than recomputing from cash flows, which diverges badly with open inventory.
+ */
 export function computeProductPnl(
-  trades: Trade[],
-  equityPoints: EquityPoint[],
+  bookRows: BookRow[],
 ): Record<string, { timestamp: number; pnl: number }[]> {
-  const products = [...new Set(trades.map((t) => t.symbol))];
-  const result: Record<string, { timestamp: number; pnl: number }[]> = {};
+  const byProduct: Record<string, { timestamp: number; pnl: number }[]> = {};
 
-  for (const product of products) {
-    const productTrades = trades
-      .filter((t) => t.symbol === product)
-      .sort((a, b) => a.timestamp - b.timestamp);
-
-    let cumPnl = 0;
-    let tradeIdx = 0;
-    const series: { timestamp: number; pnl: number }[] = [];
-
-    for (const ep of equityPoints) {
-      while (tradeIdx < productTrades.length && productTrades[tradeIdx].timestamp <= ep.timestamp) {
-        const t = productTrades[tradeIdx];
-        // Cash flow: buy costs money, sell earns money
-        cumPnl += t.isBuy ? -t.price * t.quantity : t.price * t.quantity;
-        tradeIdx++;
-      }
-      series.push({ timestamp: ep.timestamp, pnl: cumPnl });
-    }
-
-    result[product] = series;
+  for (const row of bookRows) {
+    if (!byProduct[row.product]) byProduct[row.product] = [];
+    byProduct[row.product].push({ timestamp: row.timestamp, pnl: row.pnl });
   }
 
-  return result;
+  for (const product of Object.keys(byProduct)) {
+    byProduct[product].sort((a, b) => a.timestamp - b.timestamp);
+  }
+
+  return byProduct;
 }
