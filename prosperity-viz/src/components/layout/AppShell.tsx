@@ -11,6 +11,7 @@ import { DecisionModeTab } from '../tabs/DecisionModeTab';
 import { InventoryRiskTab } from '../tabs/InventoryRiskTab';
 import { BookPressureTab } from '../tabs/BookPressureTab';
 import { SimpleView } from '../simple/SimpleView';
+import { StarRepoCallout } from './StarRepoCallout';
 
 export function AppShell() {
   const meta = useReplayStore((s) => s.meta);
@@ -23,6 +24,7 @@ export function AppShell() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+      <StarRepoCallout />
       {/* Toolbar */}
       <GlobalToolbar />
 

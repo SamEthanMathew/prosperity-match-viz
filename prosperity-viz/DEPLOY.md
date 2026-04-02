@@ -1,6 +1,6 @@
 # Deploying ProsperityIV Match Visualizer
 
-The app is a static Vite + React build. Optional **Supabase** integration uploads match archives when users opt in.
+The app is a static Vite + React build. After a match loads, users see a one-time (dismissible) banner suggesting a [GitHub star](https://github.com/SamEthanMathew/prosperity-match-viz) if the tool was useful — same ask as in the repo README. Optional **Supabase** integration uploads match archives when users opt in.
 
 ## Vercel
 

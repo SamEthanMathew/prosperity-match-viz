@@ -1,0 +1,22 @@
+# OS & editor noise
+.DS_Store
+Thumbs.db
+*.log
+
+# Local IDE / agent config (never commit — may contain project refs or personal settings)
+.cursor/
+.claude/
+
+# Local secrets (if created at repo root)
+.env
+.env.local
+.env.*.local
+
+# Accidental Python artifacts
+__pycache__/
+*.py[cod]
+
+# Dependencies & build (if ever at repo root)
+node_modules/
+dist/
+dist-ssr/
