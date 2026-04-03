@@ -140,15 +140,36 @@ function ProductMicroscope({ product }: { product: string }) {
               <div
                 key={i}
                 style={{
-                  border: `1px solid ${t.isBuy ? '#a6e3a1' : '#f38ba8'}33`,
+                  border: `1px solid ${
+                  t.submissionSide === 'buy'
+                    ? '#a6e3a1'
+                    : t.submissionSide === 'sell'
+                      ? '#f38ba8'
+                      : '#89b4fa'
+                }33`,
                   borderRadius: 4,
                   padding: '4px 6px',
                   marginBottom: 4,
                   fontSize: 11,
                 }}
               >
-                <div style={{ color: t.isBuy ? '#a6e3a1' : '#f38ba8', fontWeight: 'bold' }}>
-                  {t.isBuy ? '▲ BUY' : '▼ SELL'} {t.quantity} @ {t.price}
+                <div
+                  style={{
+                    color:
+                      t.submissionSide === 'buy'
+                        ? '#a6e3a1'
+                        : t.submissionSide === 'sell'
+                          ? '#f38ba8'
+                          : '#89b4fa',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {t.submissionSide === 'buy'
+                    ? '▲ BUY'
+                    : t.submissionSide === 'sell'
+                      ? '▼ SELL'
+                      : '◆ MKT'}{' '}
+                  {t.quantity} @ {t.price}
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, marginTop: 3 }}>
                   <span style={{ color: '#6c7086' }}>spread@fill</span>
@@ -243,15 +264,16 @@ export function MicroscopePanel() {
       });
     }
 
-    const buys = miniData.fills.filter((t) => t.isBuy);
-    const sells = miniData.fills.filter((t) => !t.isBuy);
+    const buys = miniData.fills.filter((t) => t.submissionSide === 'buy');
+    const sells = miniData.fills.filter((t) => t.submissionSide === 'sell');
+    const tape = miniData.fills.filter((t) => t.submissionSide === null);
 
     if (buys.length > 0) {
       traces.push({
         type: 'scatter', mode: 'markers',
         x: buys.map((t) => t.timestamp),
         y: buys.map((t) => t.price),
-        name: 'Buy', marker: { symbol: 'triangle-up', size: 9, color: '#a6e3a1' },
+        name: 'Our buy', marker: { symbol: 'triangle-up', size: 9, color: '#a6e3a1' },
       });
     }
     if (sells.length > 0) {
@@ -259,7 +281,17 @@ export function MicroscopePanel() {
         type: 'scatter', mode: 'markers',
         x: sells.map((t) => t.timestamp),
         y: sells.map((t) => t.price),
-        name: 'Sell', marker: { symbol: 'triangle-down', size: 9, color: '#f38ba8' },
+        name: 'Our sell', marker: { symbol: 'triangle-down', size: 9, color: '#f38ba8' },
+      });
+    }
+    if (tape.length > 0) {
+      traces.push({
+        type: 'scatter', mode: 'markers',
+        x: tape.map((t) => t.timestamp),
+        y: tape.map((t) => t.price),
+        name: 'Tape',
+        marker: { symbol: 'circle', size: 6, color: '#7f849c' },
+        opacity: 0.75,
       });
     }
 

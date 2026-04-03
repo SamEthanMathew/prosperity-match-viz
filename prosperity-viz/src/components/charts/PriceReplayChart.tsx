@@ -110,8 +110,7 @@ export function PriceReplayChart() {
       showlegend: true,
     });
 
-    // Buy fills
-    const buyTrades = productTrades.filter((t) => t.isBuy);
+    const buyTrades = productTrades.filter((t) => t.submissionSide === 'buy');
     if (buyTrades.length > 0) {
       traces.push({
         type: 'scatter',
@@ -131,8 +130,7 @@ export function PriceReplayChart() {
       });
     }
 
-    // Sell fills
-    const sellTrades = productTrades.filter((t) => !t.isBuy);
+    const sellTrades = productTrades.filter((t) => t.submissionSide === 'sell');
     if (sellTrades.length > 0) {
       traces.push({
         type: 'scatter',

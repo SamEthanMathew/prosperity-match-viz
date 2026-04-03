@@ -146,9 +146,10 @@ export function computeTradeOutcomes(
         fwdValues[h] = null;
       } else {
         const midFwd = fwdBook.midPrice;
-        fwdValues[h] = trade.isBuy
-          ? midFwd - trade.price
-          : trade.price - midFwd;
+        fwdValues[h] =
+          trade.submissionSide === 'buy'
+            ? midFwd - trade.price
+            : trade.price - midFwd;
       }
     }
 
@@ -276,7 +277,7 @@ export function generateBookmarks(
         makeBookmark(
           `large_fill_${trade.symbol}_${trade.timestamp}_${trade.price}`,
           trade.timestamp,
-          `Large Fill: ${trade.isBuy ? 'BUY' : 'SELL'} ${trade.quantity} ${trade.symbol} @${trade.price}`,
+          `Large Fill: ${trade.submissionSide === 'buy' ? 'BUY' : 'SELL'} ${trade.quantity} ${trade.symbol} @${trade.price}`,
           'large_fill',
           trade.symbol,
         ),
@@ -299,6 +300,20 @@ export function computeProductPnl(
 ): Record<string, { timestamp: number; pnl: number }[]> {
   const byProduct: Record<string, { timestamp: number; pnl: number }[]> = {};
 
+    let cumPnl = 0;
+    let tradeIdx = 0;
+    const series: { timestamp: number; pnl: number }[] = [];
+
+    for (const ep of equityPoints) {
+      while (tradeIdx < productTrades.length && productTrades[tradeIdx].timestamp <= ep.timestamp) {
+        const t = productTrades[tradeIdx];
+        // Cash flow: buy costs money, sell earns money
+        cumPnl +=
+          t.submissionSide === 'buy' ? -t.price * t.quantity : t.price * t.quantity;
+        tradeIdx++;
+      }
+      series.push({ timestamp: ep.timestamp, pnl: cumPnl });
+    }
   for (const row of bookRows) {
     if (!byProduct[row.product]) byProduct[row.product] = [];
     byProduct[row.product].push({ timestamp: row.timestamp, pnl: row.pnl });

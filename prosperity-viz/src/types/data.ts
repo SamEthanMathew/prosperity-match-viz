@@ -42,12 +42,18 @@ export interface BotState {
   nOrders: number;
 }
 
+/** null = third-party / market tape (neither side is SUBMISSION in log). */
+export type SubmissionSide = 'buy' | 'sell' | null;
+
 export interface Trade {
   timestamp: number;
   symbol: string;
   price: number;
   quantity: number;
+  /** Submission bought (buyer === SUBMISSION). */
   isBuy: boolean;
+  /** buy | sell = our fill; null = tape trade (not our order). */
+  submissionSide: SubmissionSide;
 }
 
 export interface Position {

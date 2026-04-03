@@ -37,8 +37,8 @@ export function TradeLedger() {
     return tradeOutcomes.filter((o) => {
       const t = o.trade;
       if (tradeFilter.products.length > 0 && !tradeFilter.products.includes(t.symbol)) return false;
-      if (tradeFilter.direction === 'buy' && !t.isBuy) return false;
-      if (tradeFilter.direction === 'sell' && t.isBuy) return false;
+      if (tradeFilter.direction === 'buy' && t.submissionSide !== 'buy') return false;
+      if (tradeFilter.direction === 'sell' && t.submissionSide !== 'sell') return false;
       if (tradeFilter.timestampMin !== null && t.timestamp < tradeFilter.timestampMin) return false;
       if (tradeFilter.timestampMax !== null && t.timestamp > tradeFilter.timestampMax) return false;
       if (tradeFilter.onlyBookmarked && !bookmarkedTs.has(t.timestamp)) return false;
@@ -198,7 +198,7 @@ export function TradeLedger() {
                     : virtualItem.index % 2 === 0
                     ? '#1e1e2e'
                     : '#181825',
-                  borderLeft: `3px solid ${t.isBuy ? '#a6e3a1' : '#f38ba8'}`,
+                  borderLeft: `3px solid ${t.submissionSide === 'buy' ? '#a6e3a1' : '#f38ba8'}`,
                   cursor: 'pointer',
                 }}
                 onClick={() => {
@@ -212,8 +212,8 @@ export function TradeLedger() {
                 <div style={{ ...COL_STYLE, width: COL_WIDTHS[1], minWidth: COL_WIDTHS[1], color: '#89b4fa' }}>
                   {t.symbol}
                 </div>
-                <div style={{ ...COL_STYLE, width: COL_WIDTHS[2], minWidth: COL_WIDTHS[2], color: t.isBuy ? '#a6e3a1' : '#f38ba8', fontWeight: 'bold' }}>
-                  {t.isBuy ? '▲B' : '▼S'}
+                <div style={{ ...COL_STYLE, width: COL_WIDTHS[2], minWidth: COL_WIDTHS[2], color: t.submissionSide === 'buy' ? '#a6e3a1' : '#f38ba8', fontWeight: 'bold' }}>
+                  {t.submissionSide === 'buy' ? '▲B' : '▼S'}
                 </div>
                 <div style={{ ...COL_STYLE, width: COL_WIDTHS[3], minWidth: COL_WIDTHS[3], fontFamily: 'monospace' }}>
                   {t.price.toFixed(1)}
@@ -252,7 +252,7 @@ export function TradeLedger() {
                       const bm = bookmarks.find((b) => b.timestamp === t.timestamp && b.category === 'large_fill');
                       if (bm) removeBookmark(bm.id);
                     } else {
-                      addManualBookmark(t.timestamp, `${t.isBuy ? 'BUY' : 'SELL'} ${t.quantity} ${t.symbol} @${t.price}`);
+                      addManualBookmark(t.timestamp, `${t.submissionSide === 'buy' ? 'BUY' : 'SELL'} ${t.quantity} ${t.symbol} @${t.price}`);
                     }
                   }}
                 >

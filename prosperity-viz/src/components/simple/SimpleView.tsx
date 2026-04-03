@@ -17,8 +17,9 @@ function fairAtFill(trade: Trade, botStates: BotState[]): number | null {
 }
 
 function tradeEdge(trade: Trade, fair: number): number {
-  // Positive = good (bought below fair, or sold above fair)
-  return trade.isBuy ? fair - trade.price : trade.price - fair;
+  if (trade.submissionSide === 'buy') return fair - trade.price;
+  if (trade.submissionSide === 'sell') return trade.price - fair;
+  return 0;
 }
 
 const MODE_PLAIN: Record<string, string> = {
@@ -51,8 +52,9 @@ function ScoreCards() {
 
   if (!meta) return null;
 
+  const ownTrades = trades.filter((t) => t.submissionSide !== null);
   const tradeCounts: Record<string, number> = {};
-  for (const t of trades) {
+  for (const t of ownTrades) {
     tradeCounts[t.symbol] = (tradeCounts[t.symbol] ?? 0) + 1;
   }
 
@@ -84,9 +86,9 @@ function ScoreCards() {
 
       {/* Trades */}
       <div style={cardStyle}>
-        <div style={{ fontSize: 11, color: '#7f849c', marginBottom: 4 }}>📊 Total Trades</div>
+        <div style={{ fontSize: 11, color: '#7f849c', marginBottom: 4 }}>📊 Your fills</div>
         <div style={{ fontSize: 28, fontWeight: 'bold', color: '#89b4fa', fontFamily: 'monospace' }}>
-          {trades.length}
+          {ownTrades.length}
         </div>
         <div style={{ marginTop: 4 }}>
           {Object.entries(tradeCounts).map(([sym, cnt]) => (
@@ -104,7 +106,7 @@ function ScoreCards() {
           {duration.toFixed(0)}s
         </div>
         <div style={{ fontSize: 10, color: '#6c7086', marginTop: 4 }}>
-          ~{(trades.length / duration).toFixed(1)} trades/sec
+          ~{(ownTrades.length / Math.max(duration, 1e-6)).toFixed(1)} fills/sec
         </div>
       </div>
 
@@ -150,6 +152,7 @@ function FairValueChart({ product }: { product: string }) {
       .sort((a, b) => a.timestamp - b.timestamp);
 
     const productTrades = trades.filter((t) => t.symbol === product);
+    const ownProductTrades = productTrades.filter((t) => t.submissionSide !== null);
 
     // Build carry-forward fair value aligned to bookRows timestamps
     const fairByTs = new Map<number, number>();
@@ -182,9 +185,8 @@ function FairValueChart({ product }: { product: string }) {
       return dev < 0 ? dev : null;
     });
 
-    // Buy fills
-    const buys = productTrades.filter((t) => t.isBuy);
-    const sells = productTrades.filter((t) => !t.isBuy);
+    const buys = ownProductTrades.filter((t) => t.submissionSide === 'buy');
+    const sells = ownProductTrades.filter((t) => t.submissionSide === 'sell');
 
     const traces: object[] = [
       // Mid price (grey)
@@ -302,7 +304,9 @@ function TradeQualitySection() {
     }
 
     return products.map((product) => {
-      const productTrades = trades.filter((t) => t.symbol === product);
+      const productTrades = trades.filter(
+        (t) => t.symbol === product && t.submissionSide !== null,
+      );
       const points = productTrades.map((t) => {
         const fair = fairAtFill(t, botStates);
         if (fair === null) return null;
@@ -373,7 +377,7 @@ function TradeQualitySection() {
                 return (
                   <div
                     key={i}
-                    title={`${p.trade.isBuy ? 'BUY' : 'SELL'} ${p.trade.quantity} @ ${p.trade.price} | fair=${p.fair.toFixed(1)} | edge=${p.edge.toFixed(1)} | fwd500=${p.fwd500?.toFixed(1) ?? '?'}`}
+                    title={`${p.trade.submissionSide === 'buy' ? 'BUY' : 'SELL'} ${p.trade.quantity} @ ${p.trade.price} | fair=${p.fair.toFixed(1)} | edge=${p.edge.toFixed(1)} | fwd500=${p.fwd500?.toFixed(1) ?? '?'}`}
                     style={{
                       position: 'absolute',
                       left: `${xPct}%`,
@@ -459,8 +463,8 @@ function buildEventCards(
 
       const edgeDesc = edge !== null
         ? edge > 0
-          ? `${Math.abs(edge).toFixed(1)} cash ${trade.isBuy ? 'BELOW' : 'ABOVE'} fair value ✅`
-          : `${Math.abs(edge).toFixed(1)} cash ${trade.isBuy ? 'ABOVE' : 'BELOW'} fair value ❌`
+          ? `${Math.abs(edge).toFixed(1)} SeaShells ${trade.submissionSide === 'buy' ? 'BELOW' : 'ABOVE'} fair value ✅`
+          : `${Math.abs(edge).toFixed(1)} SeaShells ${trade.submissionSide === 'buy' ? 'ABOVE' : 'BELOW'} fair value ❌`
         : 'unknown edge (no fair value data)';
 
       let outcomeText = '';
@@ -474,13 +478,13 @@ function buildEventCards(
       cards.push({
         timestamp: bm.timestamp,
         type: 'fill',
-        headline: `${trade.isBuy ? '🟢 BOUGHT' : '🔴 SOLD'} ${trade.quantity} ${trade.symbol} at ${trade.price}`,
+        headline: `${trade.submissionSide === 'buy' ? '🟢 BOUGHT' : '🔴 SOLD'} ${trade.quantity} ${trade.symbol} at ${trade.price}`,
         body: fair !== null
           ? `Fair value was ${fair.toFixed(1)} — we traded ${edgeDesc}.`
           : 'No fair value data at this tick.',
         outcome: outcomeText || undefined,
         color: isGoodEntry ? '#a6e3a133' : '#f38ba833',
-        emoji: trade.isBuy ? '🟢' : '🔴',
+        emoji: trade.submissionSide === 'buy' ? '🟢' : '🔴',
       });
     } else if (bm.category === 'mode_switch') {
       const parts = bm.label.split('→');

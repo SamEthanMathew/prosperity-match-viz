@@ -148,8 +148,10 @@ export const useReplayStore = create<ReplayState>()((set, get) => ({
 
   navigateFill: (direction: 'next' | 'prev') => {
     const { trades, activeTimestamp } = get();
-    if (trades.length === 0) return;
-    const sorted = [...trades].sort((a, b) => a.timestamp - b.timestamp);
+    const sorted = trades
+      .filter((t) => t.submissionSide !== null)
+      .sort((a, b) => a.timestamp - b.timestamp);
+    if (sorted.length === 0) return;
     const target =
       direction === 'next'
         ? nextTimestamp(sorted, activeTimestamp, (t) => t.timestamp)

@@ -53,7 +53,7 @@ export async function uploadMatchToSupabase(
     round: parsed.meta.round,
     status: parsed.meta.status,
     profit: parsed.meta.profit,
-    trade_count: parsed.trades.length,
+    trade_count: parsed.trades.filter((t) => t.submissionSide !== null).length,
     book_row_count: parsed.bookRows.length,
     bot_state_count: parsed.botStates.length,
     mode_switch_count: parsed.modeSwitches.length,

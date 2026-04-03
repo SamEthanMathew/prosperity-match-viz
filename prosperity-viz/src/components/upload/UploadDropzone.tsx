@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { useReplayStore } from '../../store/useReplayStore';
 import { parseZipFile } from '../../parsing/parseZip';
 import { isSupabaseConfigured } from '../../lib/supabaseClient';
@@ -92,10 +93,16 @@ export function UploadDropzone() {
         <div style={{ color: '#7f849c', fontSize: 12 }}>
           Drop your match .zip file to begin analysis
         </div>
-        <div style={{ marginTop: 10 }}>
+        <div style={{ marginTop: 10, display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
           <button type="button" style={btnStyle} onClick={openHelp} title="Open user guide">
             How to use
           </button>
+          <Link
+            to="/backtest"
+            style={{ ...btnStyle, textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
+          >
+            Run backtest
+          </Link>
         </div>
       </div>
 
