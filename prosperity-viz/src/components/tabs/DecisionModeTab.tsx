@@ -48,7 +48,9 @@ export function DecisionModeTab() {
         .filter((b) => b.product === product)
         .sort((a, b) => a.timestamp - b.timestamp);
 
-      const productTrades = trades.filter((t) => t.symbol === product);
+      const productTrades = trades.filter(
+        (t) => t.symbol === product && t.submissionSide !== null,
+      );
 
       for (const trade of productTrades) {
         // Find mode at trade time
@@ -57,7 +59,10 @@ export function DecisionModeTab() {
           if (bs.timestamp <= trade.timestamp) mode = bs.mode;
           else break;
         }
-        const pnlContrib = trade.isBuy ? -trade.price * trade.quantity : trade.price * trade.quantity;
+        const pnlContrib =
+          trade.submissionSide === 'buy'
+            ? -trade.price * trade.quantity
+            : trade.price * trade.quantity;
         result[product][mode] = (result[product][mode] ?? 0) + pnlContrib;
       }
     }

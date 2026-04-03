@@ -56,8 +56,8 @@ export function EquityChart() {
       });
     }
 
-    // Buy fill markers
-    const buyTrades = trades.filter((t) => t.isBuy);
+    // Buy fill markers (submission only; tape trades excluded)
+    const buyTrades = trades.filter((t) => t.submissionSide === 'buy');
     if (buyTrades.length > 0) {
       traces.push({
         type: 'scatter',
@@ -79,8 +79,7 @@ export function EquityChart() {
       });
     }
 
-    // Sell fill markers
-    const sellTrades = trades.filter((t) => !t.isBuy);
+    const sellTrades = trades.filter((t) => t.submissionSide === 'sell');
     if (sellTrades.length > 0) {
       traces.push({
         type: 'scatter',

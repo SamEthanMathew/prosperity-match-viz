@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useReplayStore } from '../../store/useReplayStore';
 import { useEquityAtTimestamp } from '../../hooks/useTimestampSearch';
 import { PRODUCT_COLORS } from '../../types/data';
@@ -49,8 +50,9 @@ export function GlobalToolbar() {
     productPnlAtTs[product] = val;
   }
 
-  const totalFills = trades.length;
-  const tradesAtTs = trades.filter((t) => t.timestamp <= activeTimestamp).length;
+  const ownFills = trades.filter((t) => t.submissionSide !== null);
+  const totalFills = ownFills.length;
+  const tradesAtTs = ownFills.filter((t) => t.timestamp <= activeTimestamp).length;
 
   return (
     <div style={{
@@ -85,6 +87,9 @@ export function GlobalToolbar() {
       <button type="button" style={btnStyle} onClick={openHelp} title="Open user guide">
         How to use
       </button>
+      <Link to="/backtest" style={{ ...btnStyle, textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
+        Backtest
+      </Link>
 
       {/* Match info */}
       <span style={{ color: '#89b4fa', fontSize: 11, fontWeight: 'bold', marginRight: 4 }}>

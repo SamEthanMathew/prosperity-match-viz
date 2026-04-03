@@ -86,13 +86,14 @@ export async function parseZipFile(file: File): Promise<ParsedData> {
   const equityPoints = parseGraphLog(jsonData.graphLog);
   const botStates = parseLambdaLogs(logData.logs);
   const trades = parseTradeHistory(logData.tradeHistory);
+  const submissionTrades = trades.filter((t) => t.submissionSide !== null);
 
-  // Build derived data
+  // Build derived data (masterFrames keep full tape for context; analytics = submission fills only)
   const masterFrames = buildMasterFrames(bookRows, botStates, trades);
   const modeSwitches = detectModeSwitches(botStates);
-  const tradeOutcomes = computeTradeOutcomes(trades, bookRows);
-  const bookmarks = generateBookmarks(equityPoints, masterFrames, trades, modeSwitches);
-  const productPnl = computeProductPnl(trades, equityPoints);
+  const tradeOutcomes = computeTradeOutcomes(submissionTrades, bookRows);
+  const bookmarks = generateBookmarks(equityPoints, masterFrames, submissionTrades, modeSwitches);
+  const productPnl = computeProductPnl(submissionTrades, equityPoints);
 
   const meta: MatchMeta = {
     round: jsonData.round,

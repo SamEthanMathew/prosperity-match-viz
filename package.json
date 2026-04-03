@@ -1,0 +1,12 @@
+{
+  "name": "prosperity-match-viz",
+  "private": true,
+  "scripts": {
+    "dev:backtest-ui": "concurrently -n api,viz -c blue,green \"npm run start --prefix backtest-api\" \"npm run dev --prefix prosperity-viz\"",
+    "dev:backtest-ui:open": "concurrently -n api,viz,open -c blue,green,magenta \"npm run start --prefix backtest-api\" \"npm run dev --prefix prosperity-viz\" \"wait-on http://127.0.0.1:5173 && node ./scripts/open-backtest-page.mjs\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "wait-on": "^8.0.3"
+  }
+}
