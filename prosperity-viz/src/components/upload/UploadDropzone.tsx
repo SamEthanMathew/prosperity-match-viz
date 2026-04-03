@@ -88,12 +88,18 @@ export function UploadDropzone() {
     >
       <div style={{ textAlign: 'center' }}>
         <div style={{ fontSize: 24, fontWeight: 'bold', color: '#89b4fa', marginBottom: 6 }}>
-          ProsperityIV Match Visualizer
+          Match Visualizer
         </div>
         <div style={{ color: '#7f849c', fontSize: 12 }}>
           Drop your match .zip file to begin analysis
         </div>
         <div style={{ marginTop: 10, display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Link
+            to="/"
+            style={{ ...btnStyle, textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
+          >
+            ← Home
+          </Link>
           <button type="button" style={btnStyle} onClick={openHelp} title="Open user guide">
             How to use
           </button>

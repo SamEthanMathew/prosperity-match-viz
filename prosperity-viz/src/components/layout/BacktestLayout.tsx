@@ -25,7 +25,7 @@ const activeBadgeStyle: React.CSSProperties = {
   alignItems: 'center',
 };
 
-export function BacktestLayout({ children, active }: { children: React.ReactNode; active?: 'backtest' | 'montecarlo' }) {
+export function BacktestLayout({ children, active }: { children: React.ReactNode; active?: 'visualizer' | 'backtest' | 'montecarlo' }) {
   const openHelp = useReplayStore((s) => s.openHelp);
 
   return (
@@ -50,16 +50,18 @@ export function BacktestLayout({ children, active }: { children: React.ReactNode
           flexWrap: 'wrap',
         }}
       >
-        <span
+        <Link
+          to="/"
           style={{
             color: '#89b4fa',
             fontSize: 12,
             fontWeight: 'bold',
             marginRight: 4,
+            textDecoration: 'none',
           }}
         >
-          Prosperity Match Viz
-        </span>
+          ProsperityIV Tools Hub
+        </Link>
         <Link
           to="/"
           style={{
@@ -69,8 +71,15 @@ export function BacktestLayout({ children, active }: { children: React.ReactNode
             alignItems: 'center',
           }}
         >
-          Visualizer
+          Home
         </Link>
+        {active === 'visualizer' ? (
+          <span style={activeBadgeStyle}>Visualizer</span>
+        ) : (
+          <Link to="/visualizer" style={{ ...btnStyle, textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
+            Visualizer
+          </Link>
+        )}
         {active === 'backtest' ? (
           <span style={activeBadgeStyle}>Backtest</span>
         ) : (

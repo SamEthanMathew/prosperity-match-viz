@@ -6,12 +6,15 @@ import { HelpGuideModal } from './components/help/HelpGuideModal';
 import { useKeyboardNav } from './hooks/useKeyboardNav';
 import { BacktestPage } from './pages/BacktestPage';
 import { MonteCarloPage } from './pages/MonteCarloPage';
+import { HomePage } from './pages/HomePage';
 
-function MainDashboard() {
+function VisualizerRoute() {
   useKeyboardNav();
   return (
     <>
-      <AppShell />
+      <BacktestLayout active="visualizer">
+        <AppShell />
+      </BacktestLayout>
       <HelpGuideModal />
     </>
   );
@@ -43,7 +46,8 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<MainDashboard />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/visualizer" element={<VisualizerRoute />} />
         <Route path="/backtest" element={<BacktestRoute />} />
         <Route path="/montecarlo" element={<MonteCarloRoute />} />
       </Routes>
