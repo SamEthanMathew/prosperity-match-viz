@@ -91,9 +91,9 @@ export async function parseZipFile(file: File): Promise<ParsedData> {
   // Build derived data (masterFrames keep full tape for context; analytics = submission fills only)
   const masterFrames = buildMasterFrames(bookRows, botStates, trades);
   const modeSwitches = detectModeSwitches(botStates);
-  const tradeOutcomes = computeTradeOutcomes(submissionTrades, bookRows);
-  const bookmarks = generateBookmarks(equityPoints, masterFrames, submissionTrades, modeSwitches);
-  const productPnl = computeProductPnl(submissionTrades, equityPoints);
+  const tradeOutcomes = computeTradeOutcomes(trades, bookRows);
+  const bookmarks = generateBookmarks(equityPoints, masterFrames, trades, modeSwitches);
+  const productPnl = computeProductPnl(bookRows);
 
   const meta: MatchMeta = {
     round: jsonData.round,

@@ -24,6 +24,9 @@ export function parseTradeHistory(raw: RawTrade[]): Trade[] {
   return raw.map((t) => {
     const submissionSide = submissionSideFromParties(t.buyer, t.seller);
     return {
+  return raw
+    .filter((t) => t.buyer === 'SUBMISSION' || t.seller === 'SUBMISSION')
+    .map((t) => ({
       timestamp: t.timestamp,
       symbol: t.symbol,
       price: t.price,
@@ -32,4 +35,6 @@ export function parseTradeHistory(raw: RawTrade[]): Trade[] {
       isBuy: submissionSide === 'buy',
     };
   });
+      isBuy: t.buyer === 'SUBMISSION',
+    }));
 }

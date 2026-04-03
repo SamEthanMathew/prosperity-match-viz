@@ -18,6 +18,7 @@ export function EquityChart() {
   const bookmarks = useReplayStore((s) => s.bookmarks);
   const activeTimestamp = useReplayStore((s) => s.activeTimestamp);
   const { onRelayout, onClick, plotlyRange } = usePlotlySync();
+  const chartScale = useReplayStore((s) => s.chartScales['equity']);
 
   // Equity PnL at a given timestamp (for placing fill markers on the curve)
   const equityAtTs = useMemo(() => {
@@ -183,11 +184,12 @@ export function EquityChart() {
         type: 'linear',
       },
       yaxis: {
-        title: 'PnL (SeaShells)',
+        title: 'PnL (cash)',
         color: TEXT_COLOR,
         gridcolor: GRID_COLOR,
         zeroline: true,
         zerolinecolor: '#45475a',
+        ...(chartScale ? { scaleanchor: 'x', scaleratio: chartScale.y / chartScale.x } : {}),
       },
       hovermode: 'x unified',
       legend: { orientation: 'h', y: -0.15, font: { color: TEXT_COLOR, size: 10 } },
@@ -198,7 +200,7 @@ export function EquityChart() {
       shapes,
       annotations,
     };
-  }, [equityPoints, modeSwitches, activeTimestamp, plotlyRange, bookmarks]);
+  }, [equityPoints, modeSwitches, activeTimestamp, plotlyRange, bookmarks, chartScale]);
 
   return (
     <PlotlyWrapper

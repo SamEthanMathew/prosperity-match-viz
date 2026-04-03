@@ -39,6 +39,8 @@ interface ReplayState {
   isLoading: boolean;
   loadError: string | null;
   helpOpen: boolean;
+  expandedChart: string | null;
+  chartScales: Record<string, { x: number; y: number }>;
 
   // ── Actions ──────────────────────────────────────────────────────────────
   loadData: (data: ParsedData) => void;
@@ -55,6 +57,8 @@ interface ReplayState {
   removeBookmark: (id: string) => void;
   openHelp: () => void;
   closeHelp: () => void;
+  setExpandedChart: (id: string | null) => void;
+  setChartScale: (chartId: string, scale: { x: number; y: number } | null) => void;
   reset: () => void;
 }
 
@@ -86,6 +90,8 @@ const initialState = {
   isLoading: false,
   loadError: null as string | null,
   helpOpen: false,
+  expandedChart: null as string | null,
+  chartScales: {} as Record<string, { x: number; y: number }>,
 };
 
 export const useReplayStore = create<ReplayState>()((set, get) => ({
@@ -185,6 +191,22 @@ export const useReplayStore = create<ReplayState>()((set, get) => ({
 
   closeHelp: () => {
     set({ helpOpen: false });
+  },
+
+  setExpandedChart: (id: string | null) => {
+    set({ expandedChart: id });
+  },
+
+  setChartScale: (chartId: string, scale: { x: number; y: number } | null) => {
+    set((state) => {
+      const next = { ...state.chartScales };
+      if (scale === null) {
+        delete next[chartId];
+      } else {
+        next[chartId] = scale;
+      }
+      return { chartScales: next };
+    });
   },
 
   reset: () => {

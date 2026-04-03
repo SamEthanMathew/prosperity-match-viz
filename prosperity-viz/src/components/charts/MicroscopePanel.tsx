@@ -225,6 +225,7 @@ export function MicroscopePanel() {
   const trades = useReplayStore((s) => s.trades);
   const activeTimestamp = useReplayStore((s) => s.activeTimestamp);
   const activeProduct = useReplayStore((s) => s.activeProduct);
+  const chartScale = useReplayStore((s) => s.chartScales['microscope']);
 
   // Mini-chart: ±3000ms window around activeTimestamp for active product
   const WINDOW = 3000;
@@ -302,7 +303,11 @@ export function MicroscopePanel() {
       range: [activeTimestamp - WINDOW, activeTimestamp + WINDOW],
       color: TEXT_COLOR, gridcolor: GRID_COLOR, type: 'linear',
     },
-    yaxis: { color: TEXT_COLOR, gridcolor: GRID_COLOR },
+    yaxis: {
+      color: TEXT_COLOR,
+      gridcolor: GRID_COLOR,
+      ...(chartScale ? { scaleanchor: 'x', scaleratio: chartScale.y / chartScale.x } : {}),
+    },
     shapes: [{
       type: 'line',
       x0: activeTimestamp, x1: activeTimestamp,
@@ -315,15 +320,10 @@ export function MicroscopePanel() {
     font: { color: TEXT_COLOR, size: 10 },
     showlegend: false,
     hovermode: 'x unified',
-  }), [activeTimestamp]);
+  }), [activeTimestamp, chartScale]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-      {/* Title */}
-      <div style={{ padding: '4px 8px', borderBottom: '1px solid #313244', color: '#89b4fa', fontSize: 11, fontWeight: 'bold' }}>
-        🔬 Timestamp Microscope — ts={activeTimestamp} ({(activeTimestamp / 1000).toFixed(1)}s)
-      </div>
-
       {/* Per-product cards */}
       <div style={{ display: 'flex', flex: 1, overflow: 'auto', minHeight: 0 }}>
         {PRODUCTS.map((p) => (

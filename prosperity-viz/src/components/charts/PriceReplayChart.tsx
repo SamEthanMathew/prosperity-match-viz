@@ -18,6 +18,7 @@ export function PriceReplayChart() {
   const activeProduct = useReplayStore((s) => s.activeProduct);
   const setActiveProduct = useReplayStore((s) => s.setActiveProduct);
   const { onRelayout, onClick, plotlyRange } = usePlotlySync();
+  const chartScale = useReplayStore((s) => s.chartScales['price_replay']);
 
   const productRows = useMemo(
     () => bookRows.filter((r) => r.product === activeProduct).sort((a, b) => a.timestamp - b.timestamp),
@@ -261,6 +262,7 @@ export function PriceReplayChart() {
         title: 'Price',
         color: TEXT_COLOR,
         gridcolor: GRID_COLOR,
+        ...(chartScale ? { scaleanchor: 'x', scaleratio: chartScale.y / chartScale.x } : {}),
       },
       yaxis2: {
         domain: [0.0, 0.27],
@@ -280,7 +282,7 @@ export function PriceReplayChart() {
       barmode: 'overlay',
       shapes,
     };
-  }, [modeSwitches, activeProduct, activeTimestamp, plotlyRange, cap]);
+  }, [modeSwitches, activeProduct, activeTimestamp, plotlyRange, cap, chartScale]);
 
   return (
     <div className="flex flex-col h-full">
