@@ -7,9 +7,7 @@ import { PriceReplayChart } from '../charts/PriceReplayChart';
 import { MicroscopePanel } from '../charts/MicroscopePanel';
 import { TradeLedger } from '../charts/TradeLedger';
 import { BookmarkList } from '../shared/BookmarkList';
-import { DecisionModeTab } from '../tabs/DecisionModeTab';
 import { InventoryRiskTab } from '../tabs/InventoryRiskTab';
-import { BookPressureTab } from '../tabs/BookPressureTab';
 import { SimpleView } from '../simple/SimpleView';
 import { StarRepoCallout } from './StarRepoCallout';
 import { ExpandablePanel } from '../shared/ExpandablePanel';
@@ -94,21 +92,9 @@ export function AppShell() {
           </div>
         )}
 
-        {!simpleMode && activeTab === 'decision_mode' && (
-          <div style={{ height: '100%', overflow: 'hidden' }}>
-            <DecisionModeTab />
-          </div>
-        )}
-
         {!simpleMode && activeTab === 'inventory_risk' && (
           <div style={{ height: '100%', overflow: 'hidden' }}>
             <InventoryRiskTab />
-          </div>
-        )}
-
-        {!simpleMode && activeTab === 'book_pressure' && (
-          <div style={{ height: '100%', overflow: 'hidden' }}>
-            <BookPressureTab />
           </div>
         )}
       </div>

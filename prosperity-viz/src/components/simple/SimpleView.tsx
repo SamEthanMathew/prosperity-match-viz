@@ -463,8 +463,8 @@ function buildEventCards(
 
       const edgeDesc = edge !== null
         ? edge > 0
-          ? `${Math.abs(edge).toFixed(1)} SeaShells ${trade.submissionSide === 'buy' ? 'BELOW' : 'ABOVE'} fair value ✅`
-          : `${Math.abs(edge).toFixed(1)} SeaShells ${trade.submissionSide === 'buy' ? 'ABOVE' : 'BELOW'} fair value ❌`
+          ? `${Math.abs(edge).toFixed(1)} cash ${trade.submissionSide === 'buy' ? 'BELOW' : 'ABOVE'} fair value ✅`
+          : `${Math.abs(edge).toFixed(1)} cash ${trade.submissionSide === 'buy' ? 'ABOVE' : 'BELOW'} fair value ❌`
         : 'unknown edge (no fair value data)';
 
       let outcomeText = '';

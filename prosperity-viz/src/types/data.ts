@@ -114,7 +114,7 @@ export interface Bookmark {
 
 // ── UI state ─────────────────────────────────────────────────────────────────
 
-export type TabId = 'main' | 'decision_mode' | 'inventory_risk' | 'book_pressure';
+export type TabId = 'main' | 'inventory_risk';
 
 export interface ViewportRange {
   xStart: number;

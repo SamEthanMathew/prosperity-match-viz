@@ -3,9 +3,7 @@ import type { TabId } from '../../types/data';
 
 const TABS: { id: TabId; label: string }[] = [
   { id: 'main', label: '📊 Main' },
-  { id: 'decision_mode', label: '🔀 Modes' },
   { id: 'inventory_risk', label: '📦 Inventory' },
-  { id: 'book_pressure', label: '📡 Signals' },
 ];
 
 export function TabBar() {
