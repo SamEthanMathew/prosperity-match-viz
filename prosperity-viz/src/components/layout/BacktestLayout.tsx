@@ -12,7 +12,20 @@ const btnStyle: React.CSSProperties = {
   whiteSpace: 'nowrap',
 };
 
-export function BacktestLayout({ children }: { children: React.ReactNode }) {
+const activeBadgeStyle: React.CSSProperties = {
+  padding: '2px 8px',
+  fontSize: 11,
+  borderRadius: 3,
+  border: '1px solid #45475a',
+  background: '#31324444',
+  color: '#a6adc8',
+  fontWeight: 'bold',
+  textDecoration: 'none',
+  display: 'inline-flex',
+  alignItems: 'center',
+};
+
+export function BacktestLayout({ children, active }: { children: React.ReactNode; active?: 'backtest' | 'montecarlo' }) {
   const openHelp = useReplayStore((s) => s.openHelp);
 
   return (
@@ -58,19 +71,20 @@ export function BacktestLayout({ children }: { children: React.ReactNode }) {
         >
           Visualizer
         </Link>
-        <span
-          style={{
-            padding: '2px 8px',
-            fontSize: 11,
-            borderRadius: 3,
-            border: '1px solid #45475a',
-            background: '#31324444',
-            color: '#a6adc8',
-            fontWeight: 'bold',
-          }}
-        >
-          Backtest
-        </span>
+        {active === 'backtest' ? (
+          <span style={activeBadgeStyle}>Backtest</span>
+        ) : (
+          <Link to="/backtest" style={{ ...btnStyle, textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
+            Backtest
+          </Link>
+        )}
+        {active === 'montecarlo' ? (
+          <span style={activeBadgeStyle}>Monte Carlo</span>
+        ) : (
+          <Link to="/montecarlo" style={{ ...btnStyle, textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
+            Monte Carlo
+          </Link>
+        )}
         <button type="button" style={btnStyle} onClick={openHelp} title="Open user guide">
           How to use
         </button>

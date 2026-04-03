@@ -5,6 +5,7 @@ import { BacktestLayout } from './components/layout/BacktestLayout';
 import { HelpGuideModal } from './components/help/HelpGuideModal';
 import { useKeyboardNav } from './hooks/useKeyboardNav';
 import { BacktestPage } from './pages/BacktestPage';
+import { MonteCarloPage } from './pages/MonteCarloPage';
 
 function MainDashboard() {
   useKeyboardNav();
@@ -19,8 +20,19 @@ function MainDashboard() {
 function BacktestRoute() {
   return (
     <>
-      <BacktestLayout>
+      <BacktestLayout active="backtest">
         <BacktestPage />
+      </BacktestLayout>
+      <HelpGuideModal />
+    </>
+  );
+}
+
+function MonteCarloRoute() {
+  return (
+    <>
+      <BacktestLayout active="montecarlo">
+        <MonteCarloPage />
       </BacktestLayout>
       <HelpGuideModal />
     </>
@@ -33,6 +45,7 @@ function App() {
       <Routes>
         <Route path="/" element={<MainDashboard />} />
         <Route path="/backtest" element={<BacktestRoute />} />
+        <Route path="/montecarlo" element={<MonteCarloRoute />} />
       </Routes>
       <Analytics />
     </>

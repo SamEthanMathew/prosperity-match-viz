@@ -11,6 +11,7 @@ import archiver from 'archiver';
 
 const MAX_TRADER_BYTES = 2 * 1024 * 1024;
 const RUST_TIMEOUT_MS = 10 * 60 * 1000;
+const MC_TIMEOUT_MS = 20 * 60 * 1000; // MC can take longer (Rust compile + N sessions)
 
 const ALLOWED_DATASET_KEYS = new Set([
   'tutorial',
@@ -421,6 +422,117 @@ app.post('/api/backtest', upload.single('trader'), async (req, res) => {
     if (!res.headersSent) {
       res.status(500).json({ error: e.message || String(e) });
     }
+  }
+});
+
+function runMonteCarlo({ bin, traderPath, outputDir, preset, sessions }) {
+  // If MC_SCRIPT is set, treat bin as the Python interpreter and prepend the script path.
+  // This supports: MC_BIN=python MC_SCRIPT=/path/to/prosperity4mcbt.py
+  const mcScript = process.env.MC_SCRIPT;
+  const scriptArgs = mcScript ? [mcScript, traderPath] : [traderPath];
+
+  // Build arg list: [script?] <trader.py> [--quick|--heavy] [--sessions N] --out <dir>
+  const args = [...scriptArgs];
+  if (sessions) {
+    args.push('--sessions', String(sessions));
+  } else if (preset === 'heavy') {
+    args.push('--heavy');
+  } else {
+    args.push('--quick');
+  }
+  args.push('--out', outputDir);
+
+  // Resolve bin: if it looks like an absolute path use it directly,
+  // otherwise look it up relative to PYTHON_BIN's Scripts dir first (venv/Windows support).
+  let execPath = bin;
+  const pythonBin = process.env.PYTHON_BIN;
+  if (pythonBin && !path.isAbsolute(bin)) {
+    const pyDir = path.dirname(path.resolve(pythonBin));
+    // Check both the Python dir and its Scripts subdir (Windows pip installs here)
+    for (const candidate of [
+      path.join(pyDir, bin),
+      path.join(pyDir, 'Scripts', bin),
+      path.join(pyDir, 'Scripts', bin + '.exe'),
+    ]) {
+      if (fsSync.existsSync(candidate)) { execPath = candidate; break; }
+    }
+  }
+
+  return new Promise((resolve, reject) => {
+    const child = spawn(execPath, args, {
+      env: { ...process.env },
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    let stdout = '';
+    let stderr = '';
+    const timer = setTimeout(() => {
+      child.kill('SIGKILL');
+      reject(new Error('prosperity4mcbt timed out'));
+    }, MC_TIMEOUT_MS);
+    child.stdout?.on('data', (d) => { stdout += d.toString(); });
+    child.stderr?.on('data', (d) => { stderr += d.toString(); });
+    child.on('error', (err) => { clearTimeout(timer); reject(err); });
+    child.on('close', (code) => {
+      clearTimeout(timer);
+      if (code === 0) resolve({ stdout, stderr });
+      else reject(new Error(`prosperity4mcbt exited ${code}${stderr ? `: ${stderr.slice(-4000)}` : ''}`));
+    });
+  });
+}
+
+app.post('/api/montecarlo', upload.single('trader'), async (req, res) => {
+  const uploadDir = req._uploadDir;
+  const traderPath = req.file?.path;
+
+  const cleanup = async () => {
+    try {
+      if (uploadDir) await fs.rm(uploadDir, { recursive: true, force: true });
+    } catch { /* ignore */ }
+  };
+
+  try {
+    const bin = process.env.MC_BIN || 'prosperity4mcbt';
+
+    if (!traderPath) {
+      res.status(400).json({ error: 'Missing trader file (field name: trader)' });
+      await cleanup();
+      return;
+    }
+
+    const preset = req.body.preset === 'heavy' ? 'heavy' : 'quick';
+    const sessionsRaw = req.body.sessions ? parseInt(req.body.sessions, 10) : null;
+    const sessions = sessionsRaw && sessionsRaw > 0 ? sessionsRaw : null;
+
+    const outputDir = await fs.mkdtemp(path.join(os.tmpdir(), 'mc-out-'));
+
+    try {
+      await runMonteCarlo({ bin, traderPath, outputDir, preset, sessions });
+    } catch (e) {
+      await fs.rm(outputDir, { recursive: true, force: true }).catch(() => {});
+      res.status(500).json({ error: e.message || String(e) });
+      await cleanup();
+      return;
+    }
+
+    const dashboardPath = path.join(outputDir, 'dashboard.json');
+    let dashboardRaw;
+    try {
+      dashboardRaw = await fs.readFile(dashboardPath, 'utf8');
+    } catch {
+      await fs.rm(outputDir, { recursive: true, force: true }).catch(() => {});
+      res.status(500).json({ error: 'dashboard.json not found in output — did prosperity4mcbt complete successfully?' });
+      await cleanup();
+      return;
+    }
+
+    await fs.rm(outputDir, { recursive: true, force: true }).catch(() => {});
+    await cleanup();
+
+    res.setHeader('Content-Type', 'application/json');
+    res.send(dashboardRaw);
+  } catch (e) {
+    await cleanup();
+    if (!res.headersSent) res.status(500).json({ error: e.message || String(e) });
   }
 });
 
